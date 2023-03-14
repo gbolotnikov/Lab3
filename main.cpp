@@ -46,7 +46,7 @@ int main(int, char *[]) {
 	printMap(reservMap);
 	std::cout << "==Custom List with a default allocator==" << '\n';
 	printContainer(customList);
-	std::cout << "==Custom List with a reservation allocator==" << '\n';
+	std::cout << "===Custom List with a reservation allocator===" << '\n';
 	printContainer(reservList);
 
 	return 0;
