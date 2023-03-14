@@ -4,8 +4,6 @@
 #include <iostream>
 #include "AllocatorMemReserve.hpp"
 
-//
-
 size_t factorial(size_t value) {
 	size_t result = 1;
 	for (size_t i = value; i > 0; --i) {
@@ -48,7 +46,7 @@ int main(int, char *[]) {
 	printMap(reservMap);
 	std::cout << "==Custom List with a default allocator==" << '\n';
 	printContainer(customList);
-	std::cout << "===Custom List with a reservation allocator===" << '\n';
+	std::cout << "==Custom List with a reservation allocator==" << '\n';
 	printContainer(reservList);
 
 	return 0;
