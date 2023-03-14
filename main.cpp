@@ -4,6 +4,8 @@
 #include <iostream>
 #include "AllocatorMemReserve.hpp"
 
+//
+
 size_t factorial(size_t value) {
 	size_t result = 1;
 	for (size_t i = value; i > 0; --i) {
