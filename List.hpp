@@ -2,6 +2,7 @@
 #define __LIST_HPP_
 
 #include <memory>
+#include <type_traits>
 
 template <class T,  typename _Alloc>
 class List;
@@ -9,11 +10,14 @@ class List;
 template<typename TBaseType>
 class ListIterator;
 
+template<typename TBaseType>
+class ListConstIterator;
 
 template<typename T>
 class ListNode {
 
 friend class ListIterator<T>;
+friend class ListConstIterator<T>;
 
 template<class U, typename _Alloc>
 friend class List;
@@ -23,7 +27,8 @@ friend class List;
     ListNode<T>* _next; 
 public:
     ListNode(T curValue): 
-        _value(curValue)
+        _value(curValue),
+        _next(nullptr)
     {
 
     }    
@@ -47,6 +52,7 @@ private:
     ListIterator(ListNode<T>* node):
     	_node(node)
     { }
+    
 public:
 
     ListIterator(const ListIterator &it):
@@ -61,8 +67,8 @@ public:
     	return _node == other._node;
     }
 
-    typename ListIterator<T>::reference operator*() const {
-    	return *_node;
+    T& operator*() {
+    	return _node->_value;
     }
 
     ListIterator& operator++() {
@@ -74,28 +80,69 @@ private:
     ListNode<T>* _node;
 };
 
+template<typename T>
+class ListConstIterator: public std::iterator<std::input_iterator_tag, ListNode<T>>
+{
+    template<class U, typename _Alloc>
+    friend class List;
+private:
+    ListConstIterator(ListNode<T>* node):
+    	_node(node)
+    { }
+    
+public:
+
+    ListConstIterator(const ListConstIterator &it):
+    	_node(it._node)
+    { }
+
+    bool operator!=(const ListConstIterator<T>& other) const {
+    	return _node != other._node;
+    }
+
+    bool operator==(const ListConstIterator<T>& other) const {
+    	return _node == other._node;
+    }
+
+    const T& operator*() {
+    	return _node->_value;
+    }
+
+    ListConstIterator& operator++() {
+    	_node = _node->_next;
+    	return *this;
+    }
+
+private:
+    ListNode<T>* _node;
+};
+
+
+
 template <class T,  typename _Alloc = std::allocator<T>>
 class List {
 private:
     using pointer = ListNode<T>*;
+    using const_pointer = ListNode<const T>*;
     using allocator_type = _Alloc;
     using AllocType =  typename _Alloc::template
         rebind<ListNode<T>>::other;   
     using iterator = ListIterator<T>;
-    using const_iterator = const ListIterator<T>;     
+    using const_iterator = ListConstIterator<T>;     
 
 private:   
     AllocType _alloc;  
-    pointer _head;
-    pointer _end = _head;
+    pointer _head = nullptr;
+    pointer _end = nullptr;
 
 private:   
-    void destruct(pointer p) {
-        if (p != _end) {
-            destruct(p->_next);
-        } 
-        _alloc.destroy(p);
-        _alloc.deallocate(p, 1);
+    void destruct(pointer curr, pointer last) {
+        while(curr != last) {
+            auto temp = curr;
+            curr = curr->_next;
+            _alloc.destroy(temp);
+            _alloc.deallocate(temp, 1);
+        }
     }
 
     bool empty() {
@@ -104,7 +151,7 @@ private:
 
 public:
     ~List() {
-        destruct(_head);       
+        destruct(_head, nullptr);       
     }
 
    void push_back(T& item) {
@@ -128,11 +175,11 @@ public:
     }
 
     iterator end() {
-    	return iterator(_end->_next);
+    	return iterator(nullptr);
     }
 
-    const_iterator end() const {
-    	return const_iterator(_end->_next);
+    const_iterator end() const {;
+    	return const_iterator(nullptr);
     }   
 
 };

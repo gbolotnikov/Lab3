@@ -21,8 +21,8 @@ void printMap(const std::map<TKey, TValue, Compare, Alloc>& map) {
 
 template <typename Container>
 void printContainer(const Container& container) {
-	for (const auto& node : container) {
-		std::cout << node.value() << '\n';
+	for (auto& node : container) {
+		std::cout << node << '\n';
 	}
 }
 

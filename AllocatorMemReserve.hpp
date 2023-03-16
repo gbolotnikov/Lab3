@@ -47,6 +47,7 @@ public:
 		_numIssued -= n;
 		if (_numIssued <= 0) {
 			std::free(_start);
+			_start = nullptr;
 		}		
 	}
 
